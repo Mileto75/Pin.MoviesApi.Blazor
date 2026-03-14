@@ -1,0 +1,56 @@
+﻿@page "/spotify" 
+@inject HttpClient HttpClient
+
+<div class="row">
+    <div class="col col-lg-5 mx auto">
+        @if(artistModel is null)
+        { 
+            <div class="spinner-border text-primary" role="status">
+                
+            </div>
+        }
+        else
+        { 
+    <div class="card" style="width: 18rem;">
+        <!--tips: add .text-center,.text-right to the .card to change card text alignment-->
+        <img src="@artistModel.Images.First().Url" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@artistModel.Name</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Popularity</h6>
+            <p class="card-text">@artistModel.Popularity</p>
+            <a href="@(artistModel.ExternalUrls.Spotify)" class="btn btn-primary">Open page</a>
+        </div>
+    </div>
+        }
+    </div>
+</div>
+
+@code {  
+    private ArtistModel artistModel;
+    protected async override Task OnInitializedAsync()
+    {
+        //   curl - X POST "https://accounts.spotify.com/api/token" \
+        //-H "Content-Type: application/x-www-form-urlencoded" \
+        //-d "grant_type=client_credentials&client_id=your-client-id&client_secret=your-client-secret"
+        var client = "ae4a9b5cd59a4e48826a82d4ce33c0ae";
+        var secret = "e18348e325494cb8b14ac9a67de07264";
+
+        var values = new Dictionary<string, string>
+        {
+            { "grant_type", "client_credentials" },
+            { "client_id", client },
+            { "client_secret", secret }
+        };
+        var formUrlEncodedContent = new FormUrlEncodedContent(values);
+        var result = await HttpClient.PostAsync("https://accounts.spotify.com/api/token", formUrlEncodedContent);
+        var content = await result.Content.ReadAsStringAsync();
+        TokenResultModel tokenResultModel = JsonSerializer.Deserialize<TokenResultModel>(content);
+        var artistId = "6TCLWtHpI3RzdiKthdMExo";
+        var url = $"https://api.spotify.com/v1/artists/{artistId}";
+        var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+        requestMessage.Headers.Authorization = new AuthenticationHeaderValue("Bearer", tokenResultModel.AccessToken);
+        result = await HttpClient.SendAsync(requestMessage);
+        content = await result.Content.ReadAsStringAsync();
+        artistModel = JsonSerializer.Deserialize<ArtistModel>(content);
+    }
+}

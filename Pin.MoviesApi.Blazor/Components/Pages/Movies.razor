@@ -1,0 +1,104 @@
+﻿@page "/movies"
+@inject IApiService ApiService
+@using System.Timers
+@if(isError)
+{ 
+    <div class="row">
+        <div class="col col-lg-6 mx-auto">
+            <div class="alert alert-danger" role="alert">
+                An error has occured
+            </div>
+        </div>
+    </div>
+}
+<div class="row">
+    <div class="col col-lg-3 mb-1 mx-auto">
+        <h4>Our movies</h4>
+        <label class="form-label">Search:</label>
+        <input type="text" @ref="searchInput"  @bind="search" @bind:event="oninput" @bind:after="GetMovies" class="form-control"/>
+    </div>
+</div>
+<div class="row">
+    @if (resultModel is null)
+    {
+        <div class="spinner-border text-primary mx-auto" role="status">
+        </div>
+    }
+    else
+    {
+        if (selectedMovie is not null)
+        {
+            <div class="col col-lg-3 mb-1 mx-auto">
+                <div class="card p-1 text-center">
+                    <img src="@selectedMovie.ImgPoster" class="card-img-top" alt="@selectedMovie.Title">
+                    <div class="card-body">
+                        <h5 class="card-title">@selectedMovie.Title</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@selectedMovie.Year</h6>
+                        <h5 class="card-title">Actors</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@selectedMovie.Actors</h6>
+                        <h5 class="card-title">Rank</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@selectedMovie.Rank</h6>
+                        <a @onclick="()=>selectedMovie = null" class="btn btn-primary">Close</a>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @foreach (var movie in resultModel.MovieModels)
+            {
+                <div class="col col-lg-3 mb-1">
+                    <div class="card p-1 text-center">
+                        <img src="@movie.ImgPoster" class="card-img-top" alt="@movie.Title">
+                        <div class="card-body">
+                            <h5 class="card-title">@movie.Title</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">@movie.Year</h6>
+                            <a @onclick="@(()=>Info(movie))" class="btn btn-primary">Info</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    }
+</div>
+@code {     
+    private ResultModel resultModel;
+    private bool isError;
+    private MovieModel selectedMovie;
+    private ElementReference searchInput;
+    private string search;
+    protected async override Task OnInitializedAsync()
+    {
+        resultModel = await ApiService.GetMoviesAsync();
+        if(!resultModel.Ok)
+        {
+            isError = true;
+        }
+    }
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        await searchInput.FocusAsync();
+    }
+    private void Info(MovieModel movieModel)
+    {
+        selectedMovie = movieModel;
+    }
+
+    private async Task GetMovies()
+    {
+        resultModel = null;
+        if (string.IsNullOrEmpty(search))
+        {
+            resultModel = await ApiService.SearchMoviesAsync("a");
+
+        }
+        else
+        {
+            resultModel = await ApiService.SearchMoviesAsync(search);
+        }
+        if (!resultModel.Ok)
+        {
+            isError = true;
+        }
+    }
+}
