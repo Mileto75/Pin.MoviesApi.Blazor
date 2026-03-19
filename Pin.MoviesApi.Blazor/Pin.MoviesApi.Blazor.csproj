@@ -10,8 +10,4 @@
     <ProjectReference Include="..\Pin.MoviesApi.Core\Pin.MoviesApi.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Components\UI\" />
-  </ItemGroup>
-
 </Project>

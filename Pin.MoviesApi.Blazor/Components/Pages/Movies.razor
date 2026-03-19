@@ -8,50 +8,20 @@
         @if (resultModel is null)
         {
             //show a loading animation
-            <div class="col col-lg-2 mx-auto">
-                <div class="spinner-border text-primary" role="status">
-
-                </div>
-            </div>
+            <LoadingComponent />
         }
         else
         {
             @if (selectedMovieModel is not null)
             {
-                <div class="col col-lg-3 m-1 mx-auto">
-                    <div class="card p-1" style="width: 18rem;">
-                        <img src="@selectedMovieModel.ImgPoster" class="card-img-top" alt="...">
-                        <div class="card-body">
-                            <h5 class="card-title">@selectedMovieModel.Title</h5>
-                            <h6 class="card-title">Actors</h6>
-                            <p>@selectedMovieModel.Actors</p>
-                            <h6 class="card-title">Year</h6>
-                            <p>@selectedMovieModel.Year</p>
-                            <h6 class="card-title">Rank</h6>
-                            <p>@selectedMovieModel.Rank</p>
-                            <a class="btn btn-outline-info" @onclick="@(() => Close())">Close</a>
-                        </div>
-                    </div>
-                </div>
+                <MovieDetailComponent Movie="selectedMovieModel" OnClose="Close"/>
             }
             else
             {
                 //show the movies
-                @foreach (var movie in resultModel.MovieModels)
-                {
-                    <div class="col col-lg-3 m-1">
-                        <div class="card p-1" style="width: 18rem;">
-                            <img src="@movie.ImgPoster" class="card-img-top" alt="...">
-                            <div class="card-body">
-                                <h5 class="card-title">@movie.Title</h5>
-                                <a class="btn btn-outline-info" @onclick="@(() => Info(movie))">Info</a>
-                            </div>
-                        </div>
-                    </div>
-                }
+                <MovieListComponent Movies="resultModel.MovieModels" OnInfo="Info"></MovieListComponent>
             }
         }
-
     </div>
 
 

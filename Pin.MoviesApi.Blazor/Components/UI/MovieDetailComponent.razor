@@ -1,0 +1,23 @@
+﻿
+<div class="col col-lg-3 m-1 mx-auto">
+    <div class="card p-1" style="width: 18rem;">
+        <img src="@Movie.ImgPoster" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h5 class="card-title">@Movie.Title</h5>
+            <h6 class="card-title">Actors</h6>
+            <p>@Movie.Actors</p>
+            <h6 class="card-title">Year</h6>
+            <p>@Movie.Year</p>
+            <h6 class="card-title">Rank</h6>
+            <p>@Movie.Rank</p>
+            <a class="btn btn-outline-info" @onclick="@(() => OnClose.InvokeAsync())">Close</a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public MovieModel Movie { get; set; }
+    [Parameter]
+    public EventCallback OnClose { get; set; }
+}

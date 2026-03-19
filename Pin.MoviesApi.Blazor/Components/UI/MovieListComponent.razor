@@ -1,0 +1,12 @@
+﻿
+@foreach (var movie in Movies)
+{
+    <MovieCardComponent Movie="movie" OnInfo="OnInfo" />
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<MovieModel> Movies { get; set; }
+    [Parameter]
+    public EventCallback<MovieModel> OnInfo { get; set; }
+}
