@@ -1,1 +1,76 @@
-﻿
+﻿@page "/movies"
+@inject IApiService ApiService
+@inject NavigationManager NavigationManager
+    <div class="row">
+        <h5>Our movies</h5>
+    </div>
+    <div class="row">
+        @if (resultModel is null)
+        {
+            //show a loading animation
+            <div class="col col-lg-2 mx-auto">
+                <div class="spinner-border text-primary" role="status">
+
+                </div>
+            </div>
+        }
+        else
+        {
+            @if (selectedMovieModel is not null)
+            {
+                <div class="col col-lg-3 m-1 mx-auto">
+                    <div class="card p-1" style="width: 18rem;">
+                        <img src="@selectedMovieModel.ImgPoster" class="card-img-top" alt="...">
+                        <div class="card-body">
+                            <h5 class="card-title">@selectedMovieModel.Title</h5>
+                            <h6 class="card-title">Actors</h6>
+                            <p>@selectedMovieModel.Actors</p>
+                            <h6 class="card-title">Year</h6>
+                            <p>@selectedMovieModel.Year</p>
+                            <h6 class="card-title">Rank</h6>
+                            <p>@selectedMovieModel.Rank</p>
+                            <a class="btn btn-outline-info" @onclick="@(() => Close())">Close</a>
+                        </div>
+                    </div>
+                </div>
+            }
+            else
+            {
+                //show the movies
+                @foreach (var movie in resultModel.MovieModels)
+                {
+                    <div class="col col-lg-3 m-1">
+                        <div class="card p-1" style="width: 18rem;">
+                            <img src="@movie.ImgPoster" class="card-img-top" alt="...">
+                            <div class="card-body">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <a class="btn btn-outline-info" @onclick="@(() => Info(movie))">Info</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }
+
+    </div>
+
+
+@code { 
+    private ResultModel resultModel;
+    private MovieModel selectedMovieModel;
+    protected override async Task OnInitializedAsync()
+    {
+        //get the data
+        resultModel = await ApiService.GetMoviesAsync();
+    }
+
+    //info method
+    private void Info(MovieModel movieModel)
+    {
+        selectedMovieModel = movieModel;
+    }
+    private void Close()
+    {
+        selectedMovieModel = null;
+    }
+}
