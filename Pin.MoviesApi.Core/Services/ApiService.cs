@@ -25,7 +25,7 @@ namespace Pin.MoviesApi.Core.Services
             var result = await _httpClient.GetAsync($"{_baseUrl}a");
             if (result.IsSuccessStatusCode) 
             {
-                var content = await result.Content.ReadAsStreamAsync();
+                var content = await result.Content.ReadAsStringAsync();
                 resultModel = JsonSerializer.Deserialize<ResultModel>(content);
             }
             return resultModel;
